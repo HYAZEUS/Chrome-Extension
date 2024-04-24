@@ -1,13 +1,42 @@
 
 
-
-
 let myLeads = []
 const inputEl = document.getElementById("input-el")
 const inputBtn = document.getElementById("input-btn")
 const ulEl = document.getElementById("ul-el")
 let listItems = " "
+const clearAll = document.getElementById("clear-all")
+const leadsFromLocalStorage = JSON.parse( localStorage.getItem("myLeads") )
+const welcomeEl = document.getElementById("welcome-El")
+const saveTab = document.getElementById("save-tab")
 
+
+function greetUser(timb, name) {
+    welcomeEl.textContent += `
+    ${timb} ${name} YOU ARE THE BEST!
+` }
+
+greetUser("LETS FUCKING GO", "James")
+
+
+if (leadsFromLocalStorage) {
+    myLeads = leadsFromLocalStorage
+    render(myLeads)
+}
+
+clearAll.addEventListener("dblclick", function() {
+        localStorage.clear();
+        myLeads = [];
+        render(myLeads);
+});
+
+saveTab.addEventListener("click", function() {
+    chrome.tabs.query({currentWindow: true, active: true}, function(tabs) {
+        myLeads.push(tabs[0].url)
+        localStorage.setItem("myLeads", JSON.stringify(myLeads))
+        render(myLeads)
+    });
+});
 
 inputBtn.addEventListener("click", function() {
     saveInput()
@@ -23,8 +52,48 @@ function saveInput() {
     let inputValue = inputEl.value
     myLeads.push(inputValue)
     inputEl.value = ""
-    renderLeads()
+    localStorage.setItem("myLeads", JSON.stringify(myLeads))
+    render(myLeads)
+    console.log( localStorage.getItem("myLeads"))
 }
+
+function render(leads) {
+    let listItems = ""
+    for (let i = 0; i < leads.length; i++) {
+    listItems += `
+        <li>    
+            <a target='_blank' href='${leads[i]}'>
+                ${leads[i]}
+            </a>
+        </li>
+    `
+    ulEl.innerHTML = listItems;
+} }
+
+
+
+
+
+
+// let trueOrFalse = Boolean("hello")
+
+// console.log(trueOrFalse)
+
+
+// const credits = 0
+
+// if (credits > 0) {
+//     console.log("Lets Play")
+//     } else {
+//         console.log("sorry no credit")
+//     }
+
+// let currentViewers
+
+// console.log(currentViewers)
+
+
+
 
 // inputBtn.addEventListener("click",function() {
 //     let inputValue = inputEl.value
@@ -32,21 +101,6 @@ function saveInput() {
 //     inputEl.value = ""
 //     renderLeads()
 // })
-
-
-function renderLeads() {
-    let listItems = ""
-    for (let i = 0; i < myLeads.length; i++) {
-    // ulEl.innerHTML += "<li>" + myLeads[i] + "</li>"
-    listItems += `
-        <li>    
-            <a target='_blank' href='${myLeads[i]}'>
-                ${myLeads[i]}
-            </a>
-        </li>
-    `
-    ulEl.innerHTML = listItems;
-} }
 
 
 
@@ -59,9 +113,6 @@ function renderLeads() {
 //     Cheers ${sender}
 // `
 // console.log(email);
-
-
-
 
 
 
